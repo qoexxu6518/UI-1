@@ -5,9 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>兵装打造系统</title>
 <style>
+/* 异步加载 Google 字体，不阻塞渲染 */
+@font-face {
+  font-family: 'ZCOOL QingKe HuangYou';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('ZCOOL QingKe HuangYou');
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
+button, input, select, textarea { font-family: inherit; }
 body {
-  font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
+  font-family: 'ZCOOL QingKe HuangYou', 'LiSu', 'STLiti', 'KaiTi', 'SimHei', sans-serif;
   background: #0a0a0a;
   display: flex;
   justify-content: center;
@@ -49,29 +58,32 @@ body {
 .top-bar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: linear-gradient(180deg, rgba(20,16,10,0.95), rgba(30,24,15,0.9));
-  border-bottom: 1px solid #5a4a30;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: url('border_top.png') center/cover no-repeat;
+  border-bottom: none;
   z-index: 10;
   position: relative;
   flex-shrink: 0;
+  min-height: 60px;
 }
 .top-bar .help-btn {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  border: 2px solid #c8a84e;
-  background: rgba(200,168,78,0.15);
-  color: #c8a84e;
-  font-size: 18px; font-weight: bold;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 50%; border: none;
+  background: url('btn_questionmark.png') center/contain no-repeat;
+  cursor: pointer; color: transparent; font-size: 0;
+  padding: 0; order: 2;
 }
 .top-bar .title {
-  font-size: 20px;
-  color: #e8d5a3;
+  font-size: 27px;
+  color: #f0e6cc;
   letter-spacing: 4px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  text-shadow:
+    -2px -2px 0 #000, 2px -2px 0 #000,
+    -2px 2px 0 #000, 2px 2px 0 #000,
+    0 0 6px rgba(0,0,0,0.9);
+  order: 1;
+  flex: 1;
 }
 .top-bar .gold {
   display: flex; align-items: center; gap: 6px;
@@ -85,13 +97,12 @@ body {
   border-radius: 3px; transform: rotate(45deg);
 }
 .top-bar .gold-num { color: #ffd700; font-size: 14px; }
-.top-bar .spacer { width: 32px; }
 
 /* 底部栏 */
 .bottom-bar {
   height: 56px;
-  background: linear-gradient(180deg, #1a1408, #0d0a05);
-  border-top: 2px solid #5a4a30;
+  background: url('border_buttom.png') center/cover no-repeat;
+  border-top: none;
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -103,13 +114,13 @@ body {
   cursor: pointer; padding: 4px 12px;
 }
 .back-btn .icon {
-  width: 36px; height: 36px;
-  background: linear-gradient(180deg, #4a3a20, #2a1a0a);
-  border: 2px solid #8b7355; border-radius: 6px;
+  width: 44px; height: 44px;
+  background: url('btn_return.png') center/contain no-repeat;
+  border: none; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
+  font-size: 0; color: transparent;
 }
-.back-btn .text { color: #b8a878; font-size: 11px; }
+.back-btn .text { display: none; }
 
 /* ============ 打造主界面 ============ */
 .forge-main-bg {
@@ -133,26 +144,25 @@ body {
   display: flex; flex-direction: column; align-items: center; z-index: 2;
 }
 .forge-add-btn {
-  width: 80px; height: 80px;
+  width: 100px; height: 100px;
   border-radius: 50%;
-  border: 3px solid #c8a84e;
-  background: rgba(40,32,18,0.7);
-  backdrop-filter: blur(4px);
+  border: none;
+  background: url('btn_add_bg.png') center/contain no-repeat;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.3s;
-  box-shadow: 0 0 20px rgba(200,168,78,0.2);
+  box-shadow: none;
 }
 .forge-add-btn:hover {
-  border-color: #ffd700;
-  box-shadow: 0 0 30px rgba(255,215,0,0.4);
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(200,168,78,0.3);
 }
 .forge-add-btn .plus {
-  font-size: 42px; color: #c8a84e; font-weight: 300; line-height: 1;
+  font-size: 50px; color: #c8a84e; font-weight: 300; line-height: 1;
 }
+.forge-add-btn .plus img { width: 50px; height: 50px; }
 .forge-add-label {
-  color: #e8d5a3; font-size: 14px; margin-top: 14px;
+  color: #e8d5a3; font-size: 20px; margin-top: 16px;
   text-shadow: 0 1px 4px rgba(0,0,0,0.9); letter-spacing: 2px;
 }
 
@@ -170,10 +180,11 @@ body {
 .forge-ring {
   width: 200px; height: 200px;
   border-radius: 50%;
-  border: 3px solid #c8a84e;
+  border: none;
+  background: url('border_circle.png') center/contain no-repeat;
   display: flex; align-items: center; justify-content: center;
   position: relative;
-  box-shadow: 0 0 30px rgba(200,168,78,0.3), inset 0 0 30px rgba(200,168,78,0.1);
+  box-shadow: none;
 }
 .forge-ring.spinning .ring-glow { animation: ringRotate 2s linear infinite; }
 .forge-ring.complete {
@@ -195,39 +206,170 @@ body {
   font-size: 50px; z-index: 2;
 }
 .forge-item-name {
-  color: #e8d5a3; font-size: 18px; margin-top: 20px;
+  color: #e8d5a3; font-size: 24px; margin-top: 20px;
   text-shadow: 0 2px 6px rgba(0,0,0,0.9);
 }
 .forge-item-attr {
-  color: #44cc44; font-size: 16px; font-weight: bold; margin-top: 6px;
+  color: #44cc44; font-size: 20px; font-weight: bold; margin-top: 6px;
   text-shadow: 0 2px 6px rgba(0,0,0,0.9);
 }
 
-/* 锤子 */
-.hammer-left, .hammer-right { position: absolute; font-size: 32px; }
-.hammer-left { left: 30px; top: 60px; transform: rotate(-30deg); }
-.hammer-right { right: 30px; top: 60px; transform: rotate(30deg) scaleX(-1); }
+/* 锤子 - 纯CSS绘制 */
+.hammer-left, .hammer-right {
+  position: absolute; width: 60px; height: 60px; z-index: 3;
+}
+.hammer-left { left: 10px; top: 50px; transform: rotate(-30deg); }
+.hammer-right { right: 10px; top: 50px; transform: rotate(30deg) scaleX(-1); }
+.hammer-head {
+  width: 30px; height: 22px;
+  background: linear-gradient(180deg, #8a8a8a, #5a5a5a);
+  border-radius: 3px;
+  position: absolute; top: 0; left: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.hammer-head::before {
+  content: ''; position: absolute; top: 2px; right: -4px;
+  width: 6px; height: 18px;
+  background: linear-gradient(90deg, #7a7a7a, #4a4a4a);
+  border-radius: 0 3px 3px 0;
+}
+.hammer-handle {
+  width: 6px; height: 36px;
+  background: linear-gradient(90deg, #8B5E3C, #6B3E1C, #8B5E3C);
+  border-radius: 0 0 2px 2px;
+  position: absolute; top: 18px; left: 27px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
 .forge-ring.spinning .hammer-left { animation: hammerL 0.6s ease-in-out infinite; }
 .forge-ring.spinning .hammer-right { animation: hammerR 0.6s ease-in-out infinite 0.3s; }
-@keyframes hammerL { 0%,100%{transform:rotate(-30deg)} 50%{transform:rotate(10deg)} }
-@keyframes hammerR { 0%,100%{transform:rotate(30deg) scaleX(-1)} 50%{transform:rotate(-10deg) scaleX(-1)} }
+@keyframes hammerL {
+  0%,100% { transform: rotate(-40deg); }
+  50% { transform: rotate(15deg); }
+}
+@keyframes hammerR {
+  0%,100% { transform: rotate(40deg) scaleX(-1); }
+  50% { transform: rotate(-15deg) scaleX(-1); }
+}
 
-/* 火花 */
-.sparks { position: absolute; width: 200px; height: 200px; pointer-events: none; }
+/* 火花粒子系统 */
+.sparks-container { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
 .spark {
-  position: absolute; width: 4px; height: 4px;
-  background: #ffd700; border-radius: 50%; opacity: 0;
+  position: absolute; border-radius: 50%; opacity: 0;
   left: 50%; top: 50%;
 }
-.forge-ring.spinning .spark { animation: sparkA 0.8s ease-out infinite; }
-.spark:nth-child(1){--sx:50px;--sy:-40px;animation-delay:0s}
-.spark:nth-child(2){--sx:-45px;--sy:-35px;animation-delay:.15s}
-.spark:nth-child(3){--sx:30px;--sy:45px;animation-delay:.3s}
-.spark:nth-child(4){--sx:-55px;--sy:20px;animation-delay:.45s}
-.spark:nth-child(5){--sx:40px;--sy:30px;animation-delay:.6s}
-@keyframes sparkA {
-  0%{opacity:1;transform:translate(0,0) scale(1)}
-  100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(0)}
+/* 金色主火花 */
+.spark.gold { width: 5px; height: 5px; background: radial-gradient(#fff, #ffd700); box-shadow: 0 0 6px #ffd700; }
+/* 橙色次火花 */
+.spark.orange { width: 4px; height: 4px; background: radial-gradient(#ffe0a0, #ff8800); box-shadow: 0 0 4px #ff8800; }
+/* 小红火星 */
+.spark.red { width: 3px; height: 3px; background: radial-gradient(#ffaa44, #cc3300); box-shadow: 0 0 3px #cc3300; }
+/* 拖尾火花 */
+.spark.trail { width: 3px; height: 8px; border-radius: 2px; background: linear-gradient(180deg, #ffd700, transparent); }
+
+.forge-ring.spinning .spark { animation: sparkFly var(--dur, 0.8s) ease-out infinite var(--delay, 0s); }
+@keyframes sparkFly {
+  0% { opacity: 1; transform: translate(0,0) scale(1) rotate(var(--rot, 0deg)); }
+  70% { opacity: 0.6; }
+  100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0) rotate(var(--rot, 0deg)); }
+}
+
+/* 撞击闪光 */
+.impact-flash {
+  position: absolute; left: 50%; top: 50%;
+  width: 30px; height: 30px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,215,0,0.4), transparent 70%);
+  border-radius: 50%; opacity: 0; z-index: 5; pointer-events: none;
+}
+.forge-ring.spinning .impact-flash {
+  animation: impactPulse 0.6s ease-out infinite;
+}
+@keyframes impactPulse {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(0.3); }
+  15% { opacity: 0.9; transform: translate(-50%,-50%) scale(1.2); }
+  50% { opacity: 0.2; transform: translate(-50%,-50%) scale(0.8); }
+  65% { opacity: 0.7; transform: translate(-50%,-50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+}
+
+/* 热力光环 */
+.heat-glow {
+  position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,150,50,0.15), rgba(255,100,0,0.05), transparent 70%);
+  z-index: 0; opacity: 0; pointer-events: none;
+}
+.forge-ring.spinning .heat-glow {
+  animation: heatPulse 1.5s ease-in-out infinite;
+}
+@keyframes heatPulse {
+  0%,100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.15); }
+}
+
+/* 烟雾效果 */
+.smoke {
+  position: absolute; border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, rgba(180,160,120,0.3), transparent 70%);
+  pointer-events: none; z-index: 1;
+}
+.forge-ring.spinning .smoke { animation: smokeRise var(--sdur, 3s) ease-out infinite var(--sdelay, 0s); }
+@keyframes smokeRise {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  20% { opacity: 0.25; }
+  100% { opacity: 0; transform: translate(var(--smx, 0px), -80px) scale(2); }
+}
+
+/* 完成爆发光效 */
+.forge-ring.complete .heat-glow { opacity: 0; }
+.complete-burst {
+  position: absolute; inset: -40px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,0,0.6), rgba(255,180,50,0.2), transparent 70%);
+  opacity: 0; z-index: 5; pointer-events: none;
+}
+.forge-ring.complete .complete-burst {
+  animation: burstFlash 1.2s ease-out forwards;
+}
+@keyframes burstFlash {
+  0% { opacity: 0; transform: scale(0.3); }
+  20% { opacity: 1; transform: scale(1.5); }
+  60% { opacity: 0.4; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(2); }
+}
+/* 完成光芒 */
+.complete-rays {
+  position: absolute; inset: -30px;
+  opacity: 0; z-index: 4; pointer-events: none;
+}
+.forge-ring.complete .complete-rays {
+  animation: raysAppear 2s ease-out forwards;
+}
+.ray {
+  position: absolute; left: 50%; top: 50%;
+  width: 3px; height: 40px;
+  background: linear-gradient(180deg, rgba(255,215,0,0.8), transparent);
+  transform-origin: center bottom;
+}
+@keyframes raysAppear {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+/* 进度条图标替换 */
+.progress-icon-box {
+  width: 28px; height: 28px; position: relative; flex-shrink: 0;
+}
+.progress-icon-box .mini-hammer-head {
+  width: 14px; height: 10px;
+  background: linear-gradient(180deg, #c8a84e, #8a7040);
+  border-radius: 2px;
+  position: absolute; top: 2px; left: 7px;
+}
+.progress-icon-box .mini-hammer-handle {
+  width: 3px; height: 16px;
+  background: linear-gradient(90deg, #8B5E3C, #6B3E1C);
+  border-radius: 0 0 1px 1px;
+  position: absolute; top: 10px; left: 12px;
 }
 
 /* 进度条 */
@@ -235,9 +377,8 @@ body {
   width: 80%; margin-top: 30px;
   display: flex; align-items: center; gap: 8px;
 }
-.progress-icon { font-size: 20px; color: #c8a84e; }
 .progress-track {
-  flex: 1; height: 24px;
+  flex: 1; height: 30px;
   background: rgba(90,74,48,0.4);
   border-radius: 4px; border: 1px solid #5a4a30;
   overflow: hidden; position: relative;
@@ -255,8 +396,7 @@ body {
 .progress-text {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 12px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8); z-index: 1;
+  color: #fff; font-size: 16px;
 }
 
 /* 按钮 */
@@ -264,41 +404,48 @@ body {
   display: flex; gap: 16px; margin-top: 24px;
 }
 .action-btn {
-  padding: 10px 28px; border-radius: 4px;
-  font-size: 14px; cursor: pointer;
+  padding: 14px 36px; border-radius: 4px;
+  font-size: 18px; cursor: pointer;
   letter-spacing: 2px; transition: all 0.3s;
 }
 .action-btn.gold-btn {
-  background: linear-gradient(180deg, #c8a84e, #a08030);
-  border: 2px solid #d4b860; color: #1a1208;
+  background: url('btn_brown.png') center/100% 100% no-repeat;
+  border: none; color: #ffe8b0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 .action-btn.purple-btn {
-  background: linear-gradient(180deg, #9a6ad4, #7a4ab4);
-  border: 2px solid #aa7ae4; color: #fff;
+  background: url('purple.png') center/100% 100% no-repeat;
+  border: none; color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 .action-btn.green-btn {
-  background: linear-gradient(180deg, #44aa44, #2a8a2a);
-  border: 2px solid #55bb55; color: #fff;
-  padding: 12px 50px; font-size: 16px; font-weight: bold;
+  background: url('btn_cyan.png') center/100% 100% no-repeat;
+  border: none; color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  padding: 16px 56px; font-size: 22px; font-weight: bold;
 }
 .action-btn.green-btn:hover {
   box-shadow: 0 0 15px rgba(68,170,68,0.4);
 }
 .complete-label {
-  width: 80%; text-align: center; padding: 8px;
+  width: 80%; text-align: center; padding: 10px;
   background: linear-gradient(90deg, transparent, rgba(68,136,204,0.3), transparent);
-  color: #88ccff; font-size: 14px;
+  color: #88ccff; font-size: 20px;
   margin-top: 20px; letter-spacing: 4px;
 }
 
 /* ============ 装备选择界面 ============ */
 .select-body {
   flex: 1; display: flex; overflow: hidden;
-  background: linear-gradient(180deg, #1a1208, #0d0a05);
+}
+/* 左侧面板 */
+.equip-left-panel {
+  width: 140px;
+  border-right: 1px solid rgba(90,74,48,0.4);
+  background: #2a2318;
 }
 .equip-categories {
-  width: 130px;
-  border-right: 1px solid #3a2a15;
+  flex: 1;
   overflow-y: auto;
 }
 .equip-categories::-webkit-scrollbar { width: 3px; }
@@ -306,7 +453,7 @@ body {
 
 .equip-category {
   display: flex; align-items: center; gap: 8px;
-  padding: 14px 10px;
+  padding: 12px 10px;
   cursor: pointer;
   border-bottom: 1px solid rgba(90,74,48,0.3);
   transition: all 0.2s;
@@ -320,47 +467,75 @@ body {
 .equip-category.locked { opacity: 0.5; }
 
 .equip-icon {
-  width: 44px; height: 44px;
+  width: 52px; height: 52px;
   border-radius: 4px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
   position: relative; flex-shrink: 0;
 }
-.equip-icon.white { border: 2px solid #aaa; background: rgba(170,170,170,0.1); }
-.equip-icon.green { border: 2px solid #44aa44; background: rgba(68,170,68,0.1); }
-.equip-icon.blue { border: 2px solid #4488cc; background: rgba(68,136,204,0.1); }
-.equip-icon.purple { border: 2px solid #aa66dd; background: rgba(170,102,221,0.1); }
-.equip-icon.orange { border: 2px solid #ee8822; background: rgba(238,136,34,0.1); }
-.equip-icon.red { border: 2px solid #cc4444; background: rgba(204,68,68,0.1); }
+.equip-icon.white { background: url('border_write.png') center/cover no-repeat; }
+.equip-icon.green { background: url('border_green.png') center/cover no-repeat; }
+.equip-icon.blue { background: url('border_blue.png') center/cover no-repeat; }
+.equip-icon.purple { background: url('border_purple.png') center/cover no-repeat; }
+.equip-icon.orange { background: url('border_golden.png') center/cover no-repeat; }
+.equip-icon.red { background: url('border_red.png') center/cover no-repeat; }
+.equip-icon img {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72%; height: 72%; object-fit: contain;
+  pointer-events: none; z-index: 1;
+}
+.equip-icon::after {
+  content: ''; position: absolute; inset: 0;
+  background: url('itemframe.png') center/contain no-repeat;
+  pointer-events: none; z-index: 2;
+}
 
 /* 可打造标记 */
 .craftable-badge {
-  position: absolute; top: -4px; left: -4px;
-  width: 16px; height: 16px;
-  background: linear-gradient(135deg, #44dd44, #22aa22);
-  border-radius: 50%;
-  border: 1.5px solid #66ff66;
+  position: absolute; top: -3px; left: -3px;
+  width: 18px; height: 18px;
+  background: none;
+  border: none; border-radius: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; color: #fff; line-height: 1;
-  box-shadow: 0 0 6px rgba(68,221,68,0.5);
-  z-index: 2;
+  z-index: 3; box-shadow: none;
+  overflow: visible;
+}
+.craftable-badge::before {
+  content: ''; position: absolute;
+  width: 13px; height: 13px;
+  background: url('border_check.png') center/contain no-repeat;
+  z-index: 0;
+}
+.craftable-badge img {
+  width: 15px; height: 15px; object-fit: contain;
+  position: relative; z-index: 1;
+  margin-left: -2px; margin-top: -2px;
+}
+.craftable-badge::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px;
+  background: url('frame_check.png') center/contain no-repeat;
+  pointer-events: none; z-index: 2;
 }
 
 /* 筛选按钮 */
 .filter-bar {
-  display: flex; align-items: center; justify-content: flex-end;
-  padding: 6px 12px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 10px;
   border-bottom: 1px solid rgba(90,74,48,0.3);
-  background: rgba(20,16,10,0.5);
+  background: rgba(30,25,16,0.5);
+  flex-shrink: 0;
 }
 .filter-btn {
-  display: flex; align-items: center; gap: 4px;
-  padding: 4px 10px; border-radius: 4px;
-  border: 1px solid #8b7355;
-  background: rgba(139,115,85,0.15);
-  color: #c8a84e; font-size: 12px;
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 4px;
+  border: none;
+  background: url('btn_cyan.png') center/100% 100% no-repeat;
+  color: #fff; font-size: 15px;
   cursor: pointer; transition: all 0.2s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
+.filter-btn img { width: 18px; height: 18px; vertical-align: middle; }
 .filter-btn:hover { background: rgba(200,168,78,0.2); border-color: #c8a84e; }
 .filter-btn .filter-icon { font-size: 14px; }
 .filter-btn.active-filter { border-color: #44cc44; color: #44cc44; }
@@ -377,38 +552,38 @@ body {
 .filter-modal-content {
   position: relative; z-index: 1;
   width: 320px;
-  background: linear-gradient(180deg, #2a1f10, #1a1408);
-  border: 2px solid #8b7355; border-radius: 8px;
+  background: url('bg_popup.png') center/cover no-repeat;
+  border: none; border-radius: 8px;
   padding: 20px;
 }
 .filter-modal-content h3 {
-  text-align: center; color: #e8d5a3;
-  font-size: 16px; margin-bottom: 16px; letter-spacing: 4px;
+  text-align: center; color: #4a3a20;
+  font-size: 22px; margin-bottom: 18px; letter-spacing: 4px;
 }
 .filter-section {
   margin-bottom: 14px;
 }
 .filter-section-title {
-  color: #b8a878; font-size: 12px; margin-bottom: 8px;
+  color: #6a5a3a; font-size: 16px; margin-bottom: 10px;
 }
 .filter-options {
   display: flex; flex-wrap: wrap; gap: 8px;
 }
 .filter-tag {
-  padding: 5px 12px; border-radius: 4px;
-  border: 1px solid #5a4a30;
-  background: rgba(90,74,48,0.2);
-  color: #d4c4a0; font-size: 12px;
+  padding: 8px 16px; border-radius: 4px;
+  border: 1px solid #b8a878;
+  background: rgba(200,180,140,0.3);
+  color: #4a3a20; font-size: 16px;
   cursor: pointer; transition: all 0.2s;
 }
-.filter-tag:hover { border-color: #c8a84e; }
+.filter-tag:hover { border-color: #8a7040; }
 .filter-tag.selected {
-  border-color: #c8a84e;
-  background: rgba(200,168,78,0.25);
-  color: #ffd700;
+  border-color: #8a7040;
+  background: rgba(180,150,80,0.35);
+  color: #5a3a00;
 }
 .filter-tag .q-dot {
-  display: inline-block; width: 8px; height: 8px;
+  display: inline-block; width: 10px; height: 10px;
   border-radius: 50%; margin-right: 4px; vertical-align: middle;
 }
 .q-dot.white { background: #ccc; }
@@ -421,50 +596,57 @@ body {
   display: flex; gap: 12px; margin-top: 16px;
 }
 .filter-actions button {
-  flex: 1; padding: 8px; border-radius: 4px;
-  font-size: 13px; cursor: pointer; letter-spacing: 2px;
+  flex: 1; padding: 12px; border-radius: 4px;
+  font-size: 18px; cursor: pointer; letter-spacing: 2px;
 }
 .filter-reset-btn {
-  border: 1px solid #8b7355;
-  background: rgba(90,74,48,0.2); color: #d4c4a0;
+  border: none;
+  background: url('btn_gray.png') center/100% 100% no-repeat;
+  color: #d4c4a0;
 }
 .filter-apply-btn {
-  border: 2px solid #d4b860;
-  background: linear-gradient(180deg, #c8a84e, #a08030); color: #1a1208;
-  font-weight: bold;
+  border: none;
+  background: url('btn_brown.png') center/100% 100% no-repeat;
+  color: #ffe8b0; font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
 .equip-count {
-  position: absolute; bottom: -2px; right: -2px;
-  background: #2a8a2a; color: #fff;
-  font-size: 9px; padding: 1px 4px; border-radius: 2px;
+  position: absolute; bottom: 1px; right: 1px;
+  background: rgba(30,100,30,0.9); color: #fff;
+  font-size: 11px; padding: 1px 4px; border-radius: 2px;
+  z-index: 3; line-height: 1.2;
 }
-.equip-name { color: #d4c4a0; font-size: 13px; white-space: nowrap; }
+.equip-name { color: #d4c4a0; font-size: 16px; white-space: nowrap; }
 .lock-icon {
   position: absolute; right: 8px; top: 50%;
-  transform: translateY(-50%); color: #8b7355; font-size: 14px;
+  transform: translateY(-50%);
+  width: 18px; height: 18px;
+  object-fit: contain;
 }
 
 /* 右侧详情 */
 .equip-detail {
-  flex: 1; padding: 16px;
+  flex: 1; padding: 20px 16px;
   display: flex; flex-direction: column;
-  align-items: center; gap: 10px;
+  align-items: center; gap: 14px;
+  justify-content: center;
   overflow-y: auto;
+  background: #d8ccb0;
 }
 .detail-icon {
-  width: 80px; height: 80px;
+  width: 100px; height: 100px;
   border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 44px; margin-top: 6px;
+  font-size: 44px;
 }
-.detail-name { color: #e8d5a3; font-size: 16px; }
-.detail-attr { color: #44cc44; font-size: 15px; font-weight: bold; }
+.detail-name { color: #4a3a20; font-size: 24px; letter-spacing: 2px; }
+.detail-attr { color: #2a7a2a; font-size: 19px; font-weight: bold; }
 
 /* 多耗材 */
 .materials-row {
-  display: flex; gap: 12px;
-  margin-top: 6px;
+  display: flex; gap: 14px;
+  margin-top: 10px;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -473,31 +655,116 @@ body {
   align-items: center; gap: 4px;
 }
 .material-icon-box {
-  width: 50px; height: 50px;
+  width: 56px; height: 56px;
   border-radius: 4px;
-  border: 2px solid #888;
-  background: rgba(60,50,35,0.6);
+  border: none;
   display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.15s;
 }
-.material-label {
-  font-size: 10px; color: #999;
+.material-icon-box:hover { transform: scale(1.1); }
+.material-icon-box.white { background: url('border_write.png') center/cover no-repeat; }
+.material-icon-box.green { background: url('border_green.png') center/cover no-repeat; }
+.material-icon-box.blue { background: url('border_blue.png') center/cover no-repeat; }
+.material-icon-box.purple { background: url('border_purple.png') center/cover no-repeat; }
+.material-icon-box.orange { background: url('border_golden.png') center/cover no-repeat; }
+.material-icon-box.red { background: url('border_red.png') center/cover no-repeat; }
+.material-icon-box img {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 65%; height: 65%; object-fit: contain;
+  z-index: 1;
 }
-.material-text { font-size: 12px; }
-.material-text .own { color: #44cc44; }
-.material-text .sep { color: #666; }
-.material-text .req { color: #aaa; }
-.material-text.insufficient .own { color: #cc4444; }
+.material-icon-box::after {
+  content: ''; position: absolute; inset: 0;
+  background: url('itemframe.png') center/contain no-repeat;
+  pointer-events: none; z-index: 2;
+}
+.material-count-badge {
+  position: absolute; bottom: 1px; right: 1px;
+  font-size: 11px; padding: 1px 4px; border-radius: 2px;
+  z-index: 3; line-height: 1.2;
+}
+.material-count-badge.sufficient { background: #2a8a2a; color: #fff; }
+.material-count-badge.insufficient { background: #aa3333; color: #fff; }
 
-.detail-time { color: #44cc44; font-size: 13px; margin-top: 2px; }
+/* 道具详情弹窗 */
+.mat-detail-modal {
+  position: absolute; inset: 0; z-index: 95; display: none;
+  align-items: center; justify-content: center;
+}
+.mat-detail-modal.active { display: flex; }
+.mat-detail-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+}
+.mat-detail-content {
+  position: relative; z-index: 1;
+  width: 330px;
+  background: url('bg_popup.png') center/cover no-repeat;
+  border: none; border-radius: 8px;
+  padding: 28px; display: flex; flex-direction: column;
+  align-items: center; gap: 12px;
+}
+.mat-detail-icon {
+  width: 84px; height: 84px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.mat-detail-icon.white { background: url('border_write.png') center/cover no-repeat; }
+.mat-detail-icon.green { background: url('border_green.png') center/cover no-repeat; }
+.mat-detail-icon.blue { background: url('border_blue.png') center/cover no-repeat; }
+.mat-detail-icon.purple { background: url('border_purple.png') center/cover no-repeat; }
+.mat-detail-icon.orange { background: url('border_golden.png') center/cover no-repeat; }
+.mat-detail-icon.red { background: url('border_red.png') center/cover no-repeat; }
+.mat-detail-icon img {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 65%; height: 65%; object-fit: contain;
+  z-index: 1;
+}
+.mat-detail-icon::after {
+  content: ''; position: absolute; inset: 0;
+  background: url('itemframe.png') center/contain no-repeat;
+  pointer-events: none; z-index: 2;
+}
+.mat-detail-name { color: #4a3a20; font-size: 24px; letter-spacing: 3px; }
+.mat-detail-desc {
+  color: #6a5a3a; font-size: 16px; line-height: 1.8;
+  text-align: center; padding: 0 10px;
+}
+.mat-detail-info {
+  width: 100%; display: flex; flex-direction: column; gap: 6px;
+  padding: 10px 0; border-top: 1px solid rgba(150,130,100,0.4);
+}
+.mat-detail-row {
+  display: flex; justify-content: space-between;
+  font-size: 17px; color: #4a3a20;
+}
+.mat-detail-row .label { color: #8a7a58; }
+.mat-detail-row .value { color: #2a7a2a; }
+.mat-detail-row .source-value { color: #cc6600; }
+.mat-detail-goto {
+  padding: 12px 48px; border-radius: 4px;
+  background: url('btn_cyan.png') center/100% 100% no-repeat;
+  border: none; color: #fff; font-size: 20px;
+  cursor: pointer; letter-spacing: 2px; margin-top: 4px;
+  font-family: inherit;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+.detail-time { color: #2a7a2a; font-size: 18px; margin-top: 4px; }
 
 .forge-btn {
-  padding: 10px 40px;
-  background: linear-gradient(180deg, #c8a84e, #a08030);
-  border: 2px solid #d4b860; border-radius: 4px;
-  color: #1a1208; font-size: 16px; font-weight: bold;
+  padding: 12px 32px;
+  background: url('btn_brown.png') center/100% 100% no-repeat;
+  border: none; border-radius: 4px;
+  color: #ffe8b0; font-size: 20px; font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
   cursor: pointer; letter-spacing: 2px;
-  margin-top: 6px; transition: all 0.3s;
+  margin-top: 12px; transition: all 0.3s;
+  white-space: nowrap;
 }
 .forge-btn:hover:not(:disabled) {
   background: linear-gradient(180deg, #d4b860, #b89040);
@@ -505,10 +772,10 @@ body {
 }
 .forge-btn:disabled {
   opacity: 0.5; cursor: not-allowed;
-  background: linear-gradient(180deg, #7a7060, #5a5040);
-  border-color: #8a8070; color: #999;
+  background: url('btn_gray.png') center/100% 100% no-repeat;
+  border: none; color: #999;
 }
-.unlock-text { color: #44cc44; font-size: 13px; margin-top: 10px; }
+.unlock-text { color: #996633; font-size: 18px; margin-top: 12px; }
 
 /* ============ 帮助弹窗 ============ */
 .help-modal {
@@ -521,6 +788,8 @@ body {
 .help-content {
   position: relative; margin: 60px 20px;
   flex: 1; display: flex; flex-direction: column; z-index: 1;
+  background: url('bg_popup.png') center/cover no-repeat;
+  border-radius: 8px; overflow: hidden;
 }
 .help-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -538,26 +807,26 @@ body {
   flex: 1; text-align: center;
   background: linear-gradient(180deg, #cc3333, #aa2222);
   padding: 8px 20px; border-radius: 4px 4px 0 0;
-  color: #fff; font-size: 16px; letter-spacing: 4px; margin: 0 10px;
+  color: #fff; font-size: 20px; letter-spacing: 4px; margin: 0 10px;
 }
 .help-body {
-  background: rgba(20,16,10,0.95);
-  border: 2px solid #5a4a30; border-radius: 0 0 6px 6px;
+  background: transparent;
+  border: none; border-radius: 0;
   padding: 16px; flex: 1; overflow-y: auto;
-  color: #d4c4a0; font-size: 13px; line-height: 2;
+  color: #4a3a20; font-size: 15px; line-height: 2;
 }
-.help-body .breadcrumb { color: #ff8844; font-size: 12px; margin-bottom: 8px; }
-.help-body h3 { text-align: center; font-size: 16px; color: #e8d5a3; margin-bottom: 12px; }
+.help-body .breadcrumb { color: #cc6600; font-size: 14px; margin-bottom: 8px; }
+.help-body h3 { text-align: center; font-size: 20px; color: #4a3a20; margin-bottom: 12px; }
 .q-white{color:#ccc} .q-green{color:#44aa44} .q-blue{color:#4488cc} .q-purple{color:#aa66dd} .q-orange{color:#ee8822} .q-red{color:#cc4444}
 .help-pages {
   display: flex; gap: 12px; padding: 12px 20px; justify-content: center;
 }
 .help-page-btn {
-  flex: 1; padding: 10px; border-radius: 4px;
-  border: 2px solid #44aa44;
-  background: linear-gradient(180deg, rgba(68,170,68,0.2), rgba(68,170,68,0.05));
-  color: #44aa44; font-size: 14px; cursor: pointer;
-  text-align: center; letter-spacing: 4px;
+  flex: 1; padding: 12px; border-radius: 4px;
+  border: none;
+  background: url('btn_cyan.png') center/100% 100% no-repeat;
+  color: #fff; font-size: 18px; cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
 /* Toast */
@@ -566,7 +835,7 @@ body {
   transform: translateX(-50%) translateY(-20px);
   background: rgba(0,0,0,0.85);
   border: 1px solid #c8a84e; border-radius: 6px;
-  padding: 10px 24px; color: #e8d5a3; font-size: 14px;
+  padding: 12px 28px; color: #e8d5a3; font-size: 18px;
   z-index: 200; opacity: 0; transition: all 0.3s;
   pointer-events: none; white-space: nowrap;
 }
@@ -579,16 +848,15 @@ body {
   <!-- ====== 画面1: 打造主界面 ====== -->
   <div class="screen" id="screenMain">
     <div class="top-bar">
+      <span class="title">兵装打造</span>
       <button class="help-btn" onclick="showHelp()">?</button>
-      <span class="title">装备打造</span>
-      <div class="spacer"></div>
     </div>
 
     <div class="forge-main-bg">
       <!-- 空闲：显示"+"入口 -->
       <div class="idle-area" id="idleArea">
         <button class="forge-add-btn" onclick="goToSelect()">
-          <span class="plus">+</span>
+          <span class="plus"><img src="btn_add.png" alt="+"></span>
         </button>
         <div class="forge-add-label">选择装备打造</div>
       </div>
@@ -596,14 +864,14 @@ body {
       <!-- 打造中/完成 覆盖层 -->
       <div class="forging-overlay" id="forgingOverlay">
         <div class="forge-ring" id="forgeRing">
+          <div class="heat-glow"></div>
           <div class="ring-glow"></div>
-          <div class="hammer-left">🔨</div>
-          <div class="hammer-right">🔨</div>
-          <div class="sparks">
-            <div class="spark"></div><div class="spark"></div>
-            <div class="spark"></div><div class="spark"></div>
-            <div class="spark"></div>
-          </div>
+          <div class="hammer-left"><div class="hammer-head"></div><div class="hammer-handle"></div></div>
+          <div class="hammer-right"><div class="hammer-head"></div><div class="hammer-handle"></div></div>
+          <div class="impact-flash"></div>
+          <div class="sparks-container" id="sparksContainer"></div>
+          <div class="complete-burst"></div>
+          <div class="complete-rays" id="completeRays"></div>
           <div class="forge-item-display" id="forgeItemDisplay"></div>
         </div>
         <div class="forge-item-name" id="forgeItemName"></div>
@@ -611,7 +879,7 @@ body {
 
         <!-- 进度 -->
         <div id="forgingProgress" class="forge-progress-bar" style="display:none">
-          <span class="progress-icon">🔨</span>
+          <div class="progress-icon-box"><div class="mini-hammer-head"></div><div class="mini-hammer-handle"></div></div>
           <div class="progress-track">
             <div class="progress-fill" id="progressFill" style="width:0%"></div>
             <div class="progress-text" id="progressText">00:00:00</div>
@@ -632,8 +900,7 @@ body {
 
     <div class="bottom-bar">
       <div class="back-btn" onclick="showToast('返回主城')">
-        <div class="icon">🏯</div>
-        <span class="text">返回</span>
+        <div class="icon"></div>
       </div>
     </div>
   </div>
@@ -641,28 +908,25 @@ body {
   <!-- ====== 画面2: 装备选择界面 ====== -->
   <div class="screen hidden-right" id="screenSelect">
     <div class="top-bar">
+      <span class="title">兵装打造</span>
       <button class="help-btn" onclick="showHelp()">?</button>
-      <span class="title">装备打造</span>
-      <div class="gold">
-        <div class="gold-icon"></div>
-        <span class="gold-num" id="goldDisplay">40</span>
-      </div>
     </div>
 
-    <div class="filter-bar">
-      <button class="filter-btn" id="filterBtn" onclick="openFilter()">
-        <span class="filter-icon">⏣</span> 筛选
-      </button>
-    </div>
     <div class="select-body">
-      <div class="equip-categories" id="equipList"></div>
+      <div class="equip-left-panel">
+        <div class="filter-bar">
+          <button class="filter-btn" id="filterBtn" onclick="openFilter()">
+            <img src="btn_filter.png" style="width:20px;height:20px;"> 筛选
+          </button>
+        </div>
+        <div class="equip-categories" id="equipList"></div>
+      </div>
       <div class="equip-detail" id="equipDetail"></div>
     </div>
 
     <div class="bottom-bar">
       <div class="back-btn" onclick="backToMain()">
-        <div class="icon">↩</div>
-        <span class="text">返回</span>
+        <div class="icon"></div>
       </div>
     </div>
   </div>
@@ -720,6 +984,12 @@ body {
     </div>
   </div>
 
+  <!-- ====== 道具详情弹窗 ====== -->
+  <div class="mat-detail-modal" id="matDetailModal">
+    <div class="mat-detail-overlay" onclick="closeMaterialDetail()"></div>
+    <div class="mat-detail-content" id="matDetailContent"></div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
@@ -729,6 +999,24 @@ const QUALITY_ORDER = ['white','green','blue','purple','orange','red'];
 const QUALITY_NAMES = {white:'白',green:'绿',blue:'蓝',purple:'紫',orange:'橙',red:'红'};
 const TYPE_ORDER = ['weapon','horse','armor','helmet','seal','token'];
 const TYPE_NAMES = {weapon:'武器',horse:'马匹',armor:'铠甲',helmet:'头盔',seal:'帅印',token:'兵符'};
+const TYPE_ICONS = {weapon:'equip_sword.png',horse:'equip_horse.png',armor:'equip_lightarmor.png',helmet:'equip_shield.png',seal:'equip_bow.png',token:'equip_spear.png'};
+const QUALITY_BORDERS = {white:'border_write.png',green:'border_green.png',blue:'border_blue.png',purple:'border_purple.png',orange:'border_golden.png',red:'border_red.png'};
+
+// ============ 道具信息 ============
+const MATERIALS_INFO = {
+  '铁矿': { quality:'white', desc:'最基础的矿石材料，可通过铁矿场开采获得。', source:'铁矿场' },
+  '精铁': { quality:'green', desc:'经过精炼的铁矿石，品质更高，强度更大。', source:'精炼作坊' },
+  '玄铁': { quality:'blue', desc:'神秘黑色铁矿，蕴含强大的力量。', source:'深渊矿洞' },
+  '陨铁': { quality:'purple', desc:'坠落自天外的稀有金属，极为坚硬。', source:'天降陨石' },
+  '龙鳞': { quality:'orange', desc:'传说中巨龙身上脱落的鳞片，坚不可摧。', source:'讨伐巨龙' },
+  '凤羽': { quality:'red', desc:'凤凰涅槃后留下的神圣羽毛，蕴含重生之力。', source:'凤凰祭坛' },
+  '木材': { quality:'white', desc:'常见的木材，可用于制作各类装备部件。', source:'伐木场' },
+  '皮革': { quality:'white', desc:'经过鞣制的动物皮革，柔韧耐用。', source:'皮革作坊' },
+  '马料': { quality:'white', desc:'喂养战马所需的精选饲料。', source:'牧场' },
+  '图纸': { quality:'blue', desc:'记载着装备制作工艺的珍贵图纸。', source:'击败流寇' },
+  '玉石': { quality:'green', desc:'质地温润的珍贵玉石，可雕刻印章。', source:'玉石矿场' },
+  '丝绸': { quality:'green', desc:'上等蚕丝织成的丝绸，光滑柔软。', source:'织造坊' },
+};
 
 // ============ 装备数据 ============
 const equipments = [
@@ -736,7 +1024,7 @@ const equipments = [
     id: 'w_white1', name: '朴刀', type: 'weapon', icon: '🗡️',
     quality: 'white', attr: '攻击+50',
     materials: [
-      { name: '铁矿', icon: '🪨', own: 200000, need: 500 },
+      { name: '铁矿', icon: 'item_2.png', own: 200000, need: 500 },
     ],
     time: 4, count: 3, locked: false
   },
@@ -744,8 +1032,8 @@ const equipments = [
     id: 'w_green1', name: '太一刀', type: 'weapon', icon: '🗡️',
     quality: 'green', attr: '攻击+170',
     materials: [
-      { name: '精铁', icon: '🪨', own: 111000, need: 4000 },
-      { name: '木材', icon: '🪵', own: 85000, need: 2000 },
+      { name: '精铁', icon: 'item_2.png', own: 111000, need: 4000 },
+      { name: '木材', icon: 'item_1.png', own: 85000, need: 2000 },
     ],
     time: 6, count: 6, locked: false
   },
@@ -753,8 +1041,8 @@ const equipments = [
     id: 'w_blue1', name: '青龙偃月刀', type: 'weapon', icon: '🗡️',
     quality: 'blue', attr: '攻击+320',
     materials: [
-      { name: '精铁', icon: '🪨', own: 111000, need: 8000 },
-      { name: '玄铁', icon: '⛓️', own: 5000, need: 3000 },
+      { name: '精铁', icon: 'item_2.png', own: 111000, need: 8000 },
+      { name: '玄铁', icon: 'item_2.png', own: 5000, need: 3000 },
     ],
     time: 8, count: 0, locked: false
   },
@@ -762,9 +1050,9 @@ const equipments = [
     id: 'w_purple1', name: '方天画戟', type: 'weapon', icon: '🗡️',
     quality: 'purple', attr: '攻击+520',
     materials: [
-      { name: '玄铁', icon: '⛓️', own: 5000, need: 6000 },
-      { name: '陨铁', icon: '☄️', own: 800, need: 1000 },
-      { name: '图纸', icon: '📋', own: 1, need: 1 },
+      { name: '玄铁', icon: 'item_2.png', own: 5000, need: 6000 },
+      { name: '陨铁', icon: 'item_2.png', own: 800, need: 1000 },
+      { name: '图纸', icon: 'item_1.png', own: 1, need: 1 },
     ],
     time: 12, count: 0, locked: false
   },
@@ -772,9 +1060,9 @@ const equipments = [
     id: 'w_orange1', name: '赤霄剑', type: 'weapon', icon: '🗡️',
     quality: 'orange', attr: '攻击+800',
     materials: [
-      { name: '陨铁', icon: '☄️', own: 800, need: 2000 },
-      { name: '龙鳞', icon: '🐉', own: 0, need: 500 },
-      { name: '图纸', icon: '📋', own: 0, need: 1 },
+      { name: '陨铁', icon: 'item_2.png', own: 800, need: 2000 },
+      { name: '龙鳞', icon: 'item_1.png', own: 0, need: 500 },
+      { name: '图纸', icon: 'item_1.png', own: 0, need: 1 },
     ],
     time: 24, count: 0, locked: true, unlockLevel: 40
   },
@@ -782,9 +1070,9 @@ const equipments = [
     id: 'w_red1', name: '天子剑', type: 'weapon', icon: '🗡️',
     quality: 'red', attr: '攻击+1200',
     materials: [
-      { name: '龙鳞', icon: '🐉', own: 0, need: 1000 },
-      { name: '凤羽', icon: '🪶', own: 0, need: 500 },
-      { name: '图纸', icon: '📋', own: 0, need: 1 },
+      { name: '龙鳞', icon: 'item_1.png', own: 0, need: 1000 },
+      { name: '凤羽', icon: 'item_1.png', own: 0, need: 500 },
+      { name: '图纸', icon: 'item_1.png', own: 0, need: 1 },
     ],
     time: 48, count: 0, locked: true, unlockLevel: 55
   },
@@ -792,9 +1080,9 @@ const equipments = [
     id: 'h_green1', name: '白鸽马', type: 'horse', icon: '🐴',
     quality: 'green', attr: '攻击+170',
     materials: [
-      { name: '精铁', icon: '🪨', own: 111000, need: 4000 },
-      { name: '皮革', icon: '🧶', own: 52000, need: 3000 },
-      { name: '马料', icon: '🌾', own: 30000, need: 5000 },
+      { name: '精铁', icon: 'item_2.png', own: 111000, need: 4000 },
+      { name: '皮革', icon: 'item_1.png', own: 52000, need: 3000 },
+      { name: '马料', icon: 'item_1.png', own: 30000, need: 5000 },
     ],
     time: 6, count: 6, locked: false
   },
@@ -802,8 +1090,8 @@ const equipments = [
     id: 'h_blue1', name: '的卢马', type: 'horse', icon: '🐴',
     quality: 'blue', attr: '攻击+320',
     materials: [
-      { name: '精铁', icon: '🪨', own: 111000, need: 6000 },
-      { name: '马料', icon: '🌾', own: 30000, need: 8000 },
+      { name: '精铁', icon: 'item_2.png', own: 111000, need: 6000 },
+      { name: '马料', icon: 'item_1.png', own: 30000, need: 8000 },
     ],
     time: 8, count: 0, locked: false
   },
@@ -811,8 +1099,8 @@ const equipments = [
     id: 'a_green1', name: '锁子甲', type: 'armor', icon: '🛡️',
     quality: 'green', attr: '防御+102',
     materials: [
-      { name: '精铁', icon: '🪨', own: 111000, need: 4000 },
-      { name: '皮革', icon: '🧶', own: 52000, need: 3500 },
+      { name: '精铁', icon: 'item_2.png', own: 111000, need: 4000 },
+      { name: '皮革', icon: 'item_1.png', own: 52000, need: 3500 },
     ],
     time: 5, count: 0, locked: true, unlockLevel: 23
   },
@@ -820,8 +1108,8 @@ const equipments = [
     id: 'a_blue1', name: '玄铁铠', type: 'armor', icon: '🛡️',
     quality: 'blue', attr: '防御+210',
     materials: [
-      { name: '玄铁', icon: '⛓️', own: 5000, need: 5000 },
-      { name: '皮革', icon: '🧶', own: 52000, need: 4000 },
+      { name: '玄铁', icon: 'item_2.png', own: 5000, need: 5000 },
+      { name: '皮革', icon: 'item_1.png', own: 52000, need: 4000 },
     ],
     time: 8, count: 0, locked: true, unlockLevel: 30
   },
@@ -829,7 +1117,7 @@ const equipments = [
     id: 'he_green1', name: '精铁盔', type: 'helmet', icon: '⛑️',
     quality: 'green', attr: '防御+85',
     materials: [
-      { name: '精铁', icon: '🪨', own: 111000, need: 3000 },
+      { name: '精铁', icon: 'item_2.png', own: 111000, need: 3000 },
     ],
     time: 4, count: 0, locked: true, unlockLevel: 23
   },
@@ -837,9 +1125,9 @@ const equipments = [
     id: 's_blue1', name: '铜帅印', type: 'seal', icon: '📜',
     quality: 'blue', attr: '带兵+500',
     materials: [
-      { name: '精铁', icon: '🪨', own: 111000, need: 5000 },
-      { name: '玉石', icon: '💎', own: 8000, need: 2000 },
-      { name: '丝绸', icon: '🎀', own: 12000, need: 3000 },
+      { name: '精铁', icon: 'item_2.png', own: 111000, need: 5000 },
+      { name: '玉石', icon: 'item_2.png', own: 8000, need: 2000 },
+      { name: '丝绸', icon: 'item_1.png', own: 12000, need: 3000 },
     ],
     time: 6, count: 0, locked: true, unlockLevel: 28
   },
@@ -847,8 +1135,8 @@ const equipments = [
     id: 't_blue1', name: '铁兵符', type: 'token', icon: '🎖️',
     quality: 'blue', attr: '带兵+400',
     materials: [
-      { name: '精铁', icon: '🪨', own: 111000, need: 3500 },
-      { name: '玉石', icon: '💎', own: 8000, need: 1500 },
+      { name: '精铁', icon: 'item_2.png', own: 111000, need: 3500 },
+      { name: '玉石', icon: 'item_2.png', own: 8000, need: 1500 },
     ],
     time: 4, count: 0, locked: true, unlockLevel: 28
   }
@@ -926,16 +1214,17 @@ function renderEquipList() {
   }
   document.getElementById('equipList').innerHTML = sorted.map(eq => {
     const craftable = isCraftable(eq);
+    const typeImg = TYPE_ICONS[eq.type];
     return `
     <div class="equip-category ${eq.id === selectedEquip.id ? 'active' : ''} ${eq.locked ? 'locked' : ''}"
          onclick="selectEquip('${eq.id}')">
       <div class="equip-icon ${eq.quality}">
-        ${eq.icon}
+        <img src="${typeImg}" alt="${eq.name}">
         ${eq.count > 0 ? `<span class="equip-count">x${eq.count}</span>` : ''}
-        ${craftable ? '<span class="craftable-badge">✔</span>' : ''}
+        ${craftable ? '<span class="craftable-badge"><img src="icon_check.png" alt="✔"></span>' : ''}
       </div>
       <span class="equip-name">${eq.name}</span>
-      ${eq.locked ? '<span class="lock-icon">🔒</span>' : ''}
+      ${eq.locked ? '<img class="lock-icon" src="icon_lock.png" alt="锁定">' : ''}
     </div>`;
   }).join('');
   // 更新筛选按钮状态
@@ -953,11 +1242,12 @@ function renderDetail() {
 
   const matsHtml = eq.materials.map(m => {
     const insuf = m.own < m.need;
+    const info = MATERIALS_INFO[m.name] || { quality:'white' };
+    const mq = info.quality;
     return `<div class="material-item">
-      <div class="material-icon-box">${m.icon}</div>
-      <div class="material-label">${m.name}</div>
-      <div class="material-text ${insuf ? 'insufficient' : ''}">
-        <span class="own">${fmtNum(m.own)}</span><span class="sep">/</span><span class="req">${fmtNum(m.need)}</span>
+      <div class="material-icon-box ${mq}" onclick="showMaterialDetail('${m.name}', '${m.icon}', ${m.own}, ${m.need})">
+        <img src="${m.icon}" alt="${m.name}">
+        <span class="material-count-badge ${insuf ? 'insufficient' : 'sufficient'}">${fmtNum(m.own)}</span>
       </div>
     </div>`;
   }).join('');
@@ -965,17 +1255,18 @@ function renderDetail() {
   const isBusy = isForging && !isForgeComplete;
   const btnDisabled = eq.locked || isBusy;
   const btnText = isBusy ? '装备打造中' : '打造装备';
+  const typeImg = TYPE_ICONS[eq.type];
 
   if (eq.locked) {
     el.innerHTML = `
-      <div class="detail-icon equip-icon ${eq.quality}">${eq.icon}</div>
+      <div class="detail-icon equip-icon ${eq.quality}"><img src="${typeImg}" alt="${eq.name}"></div>
       <div class="detail-name">${eq.name}</div>
       <div class="detail-attr">${eq.attr}</div>
       <div class="materials-row">${matsHtml}</div>
       <div class="unlock-text">主公${eq.unlockLevel}级解锁</div>`;
   } else {
     el.innerHTML = `
-      <div class="detail-icon equip-icon ${eq.quality}">${eq.icon}</div>
+      <div class="detail-icon equip-icon ${eq.quality}"><img src="${typeImg}" alt="${eq.name}"></div>
       <div class="detail-name">${eq.name}</div>
       <div class="detail-attr">${eq.attr}</div>
       <div class="materials-row">${matsHtml}</div>
@@ -987,6 +1278,87 @@ function renderDetail() {
 function selectEquip(id) {
   const eq = equipments.find(e => e.id === id);
   if (eq) { selectedEquip = eq; renderEquipList(); renderDetail(); }
+}
+
+// ============ 粒子特效系统 ============
+let sparkInterval = null;
+let smokeInterval = null;
+
+function generateSparks() {
+  const container = document.getElementById('sparksContainer');
+  container.innerHTML = '';
+  // 生成多层火花
+  const sparks = [
+    // 金色主火花 (大颗, 远距离)
+    { cls:'gold', sx:65, sy:-55, dur:0.7, delay:0 },
+    { cls:'gold', sx:-60, sy:-50, dur:0.75, delay:0.12 },
+    { cls:'gold', sx:50, sy:60, dur:0.8, delay:0.25 },
+    { cls:'gold', sx:-70, sy:30, dur:0.65, delay:0.38 },
+    { cls:'gold', sx:40, sy:-65, dur:0.85, delay:0.5 },
+    // 橙色火花 (中等)
+    { cls:'orange', sx:45, sy:-35, dur:0.6, delay:0.05 },
+    { cls:'orange', sx:-35, sy:-45, dur:0.55, delay:0.2 },
+    { cls:'orange', sx:55, sy:25, dur:0.7, delay:0.35 },
+    { cls:'orange', sx:-50, sy:40, dur:0.6, delay:0.48 },
+    // 红色小火星
+    { cls:'red', sx:30, sy:-25, dur:0.5, delay:0.1 },
+    { cls:'red', sx:-25, sy:-30, dur:0.45, delay:0.28 },
+    { cls:'red', sx:35, sy:20, dur:0.55, delay:0.42 },
+    { cls:'red', sx:-40, sy:15, dur:0.5, delay:0.55 },
+    { cls:'red', sx:20, sy:-40, dur:0.6, delay:0.15 },
+    // 拖尾火花
+    { cls:'trail', sx:55, sy:-50, dur:0.9, delay:0.08, rot:'-40deg' },
+    { cls:'trail', sx:-50, sy:-55, dur:0.85, delay:0.22, rot:'220deg' },
+    { cls:'trail', sx:60, sy:35, dur:0.95, delay:0.4, rot:'-120deg' },
+    { cls:'trail', sx:-45, sy:50, dur:0.8, delay:0.52, rot:'140deg' },
+  ];
+
+  sparks.forEach(s => {
+    const el = document.createElement('div');
+    el.className = `spark ${s.cls}`;
+    el.style.cssText = `--sx:${s.sx}px;--sy:${s.sy}px;--dur:${s.dur}s;--delay:${s.delay}s;--rot:${s.rot || '0deg'}`;
+    container.appendChild(el);
+  });
+}
+
+function generateSmoke() {
+  const ring = document.getElementById('forgeRing');
+  // 清除旧烟雾
+  ring.querySelectorAll('.smoke').forEach(s => s.remove());
+  // 创建3个烟雾粒子
+  const smokes = [
+    { w:40, h:40, left:60, top:30, smx:'-15px', sdur:'3s', sdelay:'0s' },
+    { w:50, h:50, left:120, top:40, smx:'20px', sdur:'3.5s', sdelay:'1s' },
+    { w:35, h:35, left:90, top:35, smx:'5px', sdur:'2.8s', sdelay:'1.8s' },
+  ];
+  smokes.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'smoke';
+    el.style.cssText = `width:${s.w}px;height:${s.h}px;left:${s.left}px;top:${s.top}px;--smx:${s.smx};--sdur:${s.sdur};--sdelay:${s.sdelay}`;
+    ring.appendChild(el);
+  });
+}
+
+function generateRays() {
+  const container = document.getElementById('completeRays');
+  container.innerHTML = '';
+  const count = 12;
+  for (let i = 0; i < count; i++) {
+    const ray = document.createElement('div');
+    ray.className = 'ray';
+    const angle = (360 / count) * i;
+    ray.style.transform = `rotate(${angle}deg) translateY(-60px)`;
+    container.appendChild(ray);
+  }
+}
+
+function clearEffects() {
+  const container = document.getElementById('sparksContainer');
+  if (container) container.innerHTML = '';
+  const ring = document.getElementById('forgeRing');
+  if (ring) ring.querySelectorAll('.smoke').forEach(s => s.remove());
+  const rays = document.getElementById('completeRays');
+  if (rays) rays.innerHTML = '';
 }
 
 // ============ 打造流程 ============
@@ -1009,7 +1381,7 @@ function showForgingUI() {
   document.getElementById('forgingOverlay').classList.add('active');
 
   document.getElementById('forgeItemDisplay').innerHTML =
-    `<div class="equip-icon ${eq.quality}" style="width:80px;height:80px;font-size:44px">${eq.icon}</div>`;
+    `<div class="equip-icon ${eq.quality}" style="width:80px;height:80px"><img src="${TYPE_ICONS[eq.type]}" alt="${eq.name}"></div>`;
   document.getElementById('forgeItemName').textContent = eq.name;
   document.getElementById('forgeItemAttr').textContent = eq.attr;
 
@@ -1025,6 +1397,8 @@ function showProgressUI() {
   const ring = document.getElementById('forgeRing');
   ring.classList.add('spinning');
   ring.classList.remove('complete');
+  generateSparks();
+  generateSmoke();
   document.getElementById('forgingProgress').style.display = 'flex';
   document.getElementById('forgingBtns').style.display = 'flex';
   document.getElementById('completeLabel').style.display = 'none';
@@ -1035,6 +1409,10 @@ function showCompleteUI() {
   const ring = document.getElementById('forgeRing');
   ring.classList.remove('spinning');
   ring.classList.add('complete');
+  generateRays();
+  // 清除打造中的烟雾
+  ring.querySelectorAll('.smoke').forEach(s => s.remove());
+  document.getElementById('sparksContainer').innerHTML = '';
   document.getElementById('forgingProgress').style.display = 'none';
   document.getElementById('forgingBtns').style.display = 'none';
   document.getElementById('completeLabel').style.display = 'block';
@@ -1083,6 +1461,9 @@ function resetForgeState() {
   isForging = false;
   isForgeComplete = false;
   forgingEquip = null;
+  clearEffects();
+  const ring = document.getElementById('forgeRing');
+  ring.classList.remove('spinning', 'complete');
   document.getElementById('forgingOverlay').classList.remove('active');
   document.getElementById('idleArea').style.display = '';
 }
@@ -1090,6 +1471,31 @@ function resetForgeState() {
 // ============ 帮助 ============
 function showHelp() { document.getElementById('helpModal').classList.add('active'); }
 function closeHelp() { document.getElementById('helpModal').classList.remove('active'); }
+
+// ============ 道具详情弹窗 ============
+function showMaterialDetail(name, icon, own, need) {
+  const info = MATERIALS_INFO[name] || { quality:'white', desc:'暂无描述', source:'未知' };
+  const el = document.getElementById('matDetailContent');
+  el.innerHTML = `
+    <div class="mat-detail-icon ${info.quality}">
+      <img src="${icon}" alt="${name}">
+    </div>
+    <div class="mat-detail-name" style="color:${getQualityColor(info.quality)}">${name}</div>
+    <div class="mat-detail-desc">${info.desc}</div>
+    <div class="mat-detail-info">
+      <div class="mat-detail-row"><span class="label">持有量</span><span class="value">${fmtNum(own)} / ${fmtNum(need)}</span></div>
+      <div class="mat-detail-row"><span class="label">获取途径</span><span class="source-value">${info.source}</span></div>
+    </div>
+    <button class="mat-detail-goto" onclick="showToast('前往 ${info.source}');closeMaterialDetail()">前 往</button>`;
+  document.getElementById('matDetailModal').classList.add('active');
+}
+function closeMaterialDetail() {
+  document.getElementById('matDetailModal').classList.remove('active');
+}
+function getQualityColor(q) {
+  const colors = {white:'#ccc',green:'#44aa44',blue:'#4488cc',purple:'#aa66dd',orange:'#ee8822',red:'#cc4444'};
+  return colors[q] || '#ccc';
+}
 
 // ============ 工具函数 ============
 function fmtNum(n) {
@@ -1163,6 +1569,17 @@ function applyFilter() {
   renderEquipList();
   renderDetail();
 }
+</script>
+<script>
+// 异步加载 Google 字体（不阻塞页面）
+(function() {
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap';
+  link.media = 'print';
+  link.onload = function() { this.media = 'all'; };
+  document.head.appendChild(link);
+})();
 </script>
 </body>
 </html>
