@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>参考游戏截图</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  background: #0a0a0a;
+  color: #ccc;
+  min-height: 100vh;
+}
+.ref-header {
+  position: sticky; top: 0; z-index: 10;
+  background: #16161e;
+  border-bottom: 1px solid #2a2a3a;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 32px;
+}
+.ref-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #c8a84e;
+  letter-spacing: 3px;
+}
+.ref-back-btn {
+  padding: 12px 32px;
+  background: #2a2a1a;
+  border: 2px solid #c8a84e;
+  border-radius: 6px;
+  color: #c8a84e;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 2px;
+  transition: all 0.15s;
+  text-decoration: none;
+  display: inline-block;
+}
+.ref-back-btn:hover {
+  background: #3a3a2a;
+  border-color: #e8d060;
+  color: #e8d060;
+}
+.ref-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+}
+.game-section {
+  margin-bottom: 48px;
+}
+.game-section-title {
+  font-size: 22px;
+  color: #c8a84e;
+  letter-spacing: 2px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #2a2a3a;
+  margin-bottom: 24px;
+}
+.screenshot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+.screenshot-card {
+  background: #16161e;
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.screenshot-card:hover {
+  border-color: #4a4a6a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+.screenshot-card img {
+  width: 100%;
+  display: block;
+  object-fit: contain;
+  background: #111;
+}
+.screenshot-card .caption {
+  padding: 14px 16px;
+  font-size: 18px;
+  color: #ddd;
+  text-align: center;
+  letter-spacing: 1px;
+  border-top: 1px solid #2a2a3a;
+}
+
+/* 放大弹窗 */
+.lightbox {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+.lightbox.active { display: flex; }
+.lightbox img {
+  max-width: 92vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid #333;
+}
+.lightbox .lb-caption {
+  margin-top: 16px;
+  font-size: 20px;
+  color: #ccc;
+  letter-spacing: 2px;
+}
+.lightbox .lb-close {
+  position: absolute;
+  top: 20px; right: 28px;
+  width: 44px; height: 44px;
+  background: rgba(40,40,40,0.8);
+  border: 1px solid #555;
+  border-radius: 50%;
+  color: #ccc;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.lightbox .lb-close:hover {
+  background: rgba(80,80,80,0.8);
+  color: #fff;
+}
+</style>
+</head>
+<body>
+
+<div class="ref-header">
+  <span class="ref-title">参考游戏截图</span>
+  <a class="ref-back-btn" href="index.html">← 返回交互文档</a>
+</div>
+
+<div class="ref-content">
+  <div class="game-section">
+    <div class="game-section-title">P16《正统三国》铁匠铺</div>
+    <div class="screenshot-grid">
+      <div class="screenshot-card" onclick="openLightbox(this)">
+        <img src="参考游戏截图/P16《正统三国》铁匠铺/《正统三国》铁匠铺-装备选择.jpg" alt="装备选择">
+        <div class="caption">装备选择</div>
+      </div>
+      <div class="screenshot-card" onclick="openLightbox(this)">
+        <img src="参考游戏截图/P16《正统三国》铁匠铺/《正统三国》铁匠铺-打造中.jpg" alt="打造中">
+        <div class="caption">打造中</div>
+      </div>
+      <div class="screenshot-card" onclick="openLightbox(this)">
+        <img src="参考游戏截图/P16《正统三国》铁匠铺/《正统三国》铁匠铺-打造完成.jpg" alt="打造完成">
+        <div class="caption">打造完成</div>
+      </div>
+      <div class="screenshot-card" onclick="openLightbox(this)">
+        <img src="参考游戏截图/P16《正统三国》铁匠铺/《正统三国》铁匠铺-帮助.jpg" alt="帮助">
+        <div class="caption">帮助</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 放大弹窗 -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lb-close" onclick="closeLightbox(event)">✕</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-caption" id="lbCaption"></div>
+</div>
+
+<script>
+function openLightbox(card) {
+  var img = card.querySelector('img');
+  var caption = card.querySelector('.caption');
+  document.getElementById('lbImg').src = img.src;
+  document.getElementById('lbCaption').textContent = caption.textContent;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox(e) {
+  if (e.target === document.getElementById('lbImg')) return;
+  document.getElementById('lightbox').classList.remove('active');
+}
+</script>
+</body>
+</html>

@@ -187,6 +187,10 @@ body {
   object-fit: contain;
   border-radius: 6px;
   border: 1px solid #333;
+  cursor: pointer;
+}
+.demo-oldui-img img:hover {
+  border-color: #555;
 }
 .demo-oldui-img .no-old {
   color: #555;
@@ -209,6 +213,57 @@ body {
   line-height: 1.7;
   margin: 0;
 }
+
+.demo-ref-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: #2a2a1a;
+  border: 2px solid #c8a84e;
+  border-radius: 6px;
+  color: #c8a84e;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: 3px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.15s;
+  margin-top: 4px;
+}
+.demo-ref-btn:hover {
+  background: #3a3a2a;
+  border-color: #e8d060;
+  color: #e8d060;
+}
+
+/* 图片放大弹窗 */
+.demo-lightbox {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.92);
+  display: none;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+.demo-lightbox.active { display: flex; }
+.demo-lightbox img {
+  max-width: 92vw;
+  max-height: 82vh;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid #333;
+}
+.demo-lightbox .lb-close {
+  position: absolute; top: 20px; right: 28px;
+  width: 44px; height: 44px;
+  background: rgba(40,40,40,0.8);
+  border: 1px solid #555; border-radius: 50%;
+  color: #ccc; font-size: 24px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.demo-lightbox .lb-close:hover { background: rgba(80,80,80,0.8); color: #fff; }
 
 /* ============ 通用 ============ */
 .screen {
@@ -296,6 +351,25 @@ body {
   font-size: 0; color: transparent;
 }
 .back-btn .text { display: none; }
+
+.matel-btn {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0;
+  cursor: pointer; padding: 0 12px;
+  margin-left: auto;
+  position: relative;
+}
+.matel-btn .icon {
+  width: 44px; height: 44px;
+  background: url('btn_matel.png') center/contain no-repeat;
+  border: none; border-radius: 50%;
+}
+.matel-btn .text {
+  color: #d4c4a0; font-size: 11px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  margin-top: -10px;
+  position: relative;
+}
 
 /* ============ 打造主界面 ============ */
 .forge-main-bg {
@@ -994,6 +1068,9 @@ body {
   <div class="demo-sidebar">
     <div class="demo-sidebar-title">兵装打造 · UI交互文档</div>
     <div class="demo-section">
+      <a class="demo-ref-btn" href="references.html">🖼️ 参考游戏截图</a>
+    </div>
+    <div class="demo-section">
       <h4>▸ 界面导航（5）</h4>
       <div class="demo-nav">
         <button class="demo-nav-btn active" data-screen="idle" onclick="demoGo('idle')">① 打造主界面 · 空闲</button>
@@ -1099,10 +1176,12 @@ body {
       <div class="back-btn" onclick="backToMain()">
         <div class="icon"></div>
       </div>
+      <div class="matel-btn" onclick="showToast('打开原来的材料合成界面')">
+        <div class="icon"></div>
+        <span class="text">材料合成</span>
+      </div>
     </div>
   </div>
-
-  <!-- ====== 帮助弹窗 ====== -->
   <div class="help-modal" id="helpModal">
     <div class="help-overlay" onclick="closeHelp()"></div>
     <div class="help-content">
@@ -1125,6 +1204,12 @@ body {
     <div class="demo-oldui-img" id="demoOldImg"><span class="no-old">该界面无旧版对比</span></div>
     <div class="demo-oldui-change" id="demoOldChange"></div>
   </div>
+</div>
+
+<!-- 图片放大弹窗 -->
+<div class="demo-lightbox" id="demoLightbox" onclick="closeDemoLightbox(event)">
+  <button class="lb-close" onclick="closeDemoLightbox(event)">✕</button>
+  <img id="demoLbImg" src="" alt="">
 </div>
 
 <script>
@@ -1337,7 +1422,7 @@ function demoSyncNav(id) {
     var imgEl = document.getElementById('demoOldImg');
     var changeEl = document.getElementById('demoOldChange');
     if (old && old.img) {
-      imgEl.innerHTML = '<img src="' + old.img + '" alt="旧界面">';
+      imgEl.innerHTML = '<img src="' + old.img + '" alt="旧界面" onclick="openDemoLightbox(this)">';
     } else {
       imgEl.innerHTML = '<span class="no-old">该界面无旧版对比</span>';
     }
@@ -1704,7 +1789,7 @@ function demoGo(id) {
   var imgEl = document.getElementById('demoOldImg');
   var changeEl = document.getElementById('demoOldChange');
   if (old && old.img) {
-    imgEl.innerHTML = '<img src="' + old.img + '" alt="旧界面">';
+    imgEl.innerHTML = '<img src="' + old.img + '" alt="旧界面" onclick="openDemoLightbox(this)">';
   } else {
     imgEl.innerHTML = '<span class="no-old">该界面无旧版对比</span>';
   }
@@ -1772,6 +1857,16 @@ function demoGo(id) {
       break;
   }
   _demoNav = false;
+}
+
+// ============ 图片放大弹窗 ============
+function openDemoLightbox(img) {
+  document.getElementById('demoLbImg').src = img.src;
+  document.getElementById('demoLightbox').classList.add('active');
+}
+function closeDemoLightbox(e) {
+  if (e.target === document.getElementById('demoLbImg')) return;
+  document.getElementById('demoLightbox').classList.remove('active');
 }
 
 // 初始化
