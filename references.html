@@ -111,6 +111,9 @@ body {
   object-fit: contain;
   border-radius: 6px;
   border: 1px solid #333;
+  transition: transform 0.1s ease;
+  cursor: grab;
+  user-select: none;
 }
 .lightbox .lb-caption {
   margin-top: 16px;
@@ -169,24 +172,73 @@ body {
 </div>
 
 <!-- 放大弹窗 -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+<div class="lightbox" id="lightbox">
   <button class="lb-close" onclick="closeLightbox(event)">✕</button>
-  <img id="lbImg" src="" alt="">
+  <img id="lbImg" src="" alt="" draggable="false">
   <div class="lb-caption" id="lbCaption"></div>
 </div>
 
 <script>
+var _lbScale = 1, _lbX = 0, _lbY = 0;
+var _lbDragging = false, _lbMoved = false, _lbStartX = 0, _lbStartY = 0, _lbOrigX = 0, _lbOrigY = 0;
+
+function _lbApplyTransform() {
+  document.getElementById('lbImg').style.transform =
+    'translate(' + _lbX + 'px,' + _lbY + 'px) scale(' + _lbScale + ')';
+}
 function openLightbox(card) {
   var img = card.querySelector('img');
   var caption = card.querySelector('.caption');
-  document.getElementById('lbImg').src = img.src;
+  _lbScale = 1; _lbX = 0; _lbY = 0;
+  var lbImg = document.getElementById('lbImg');
+  lbImg.src = img.src;
+  lbImg.style.transform = 'translate(0,0) scale(1)';
   document.getElementById('lbCaption').textContent = caption.textContent;
   document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
 }
 function closeLightbox(e) {
-  if (e.target === document.getElementById('lbImg')) return;
+  if (e.target === document.getElementById('lbImg') && !_lbDragging) return;
   document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+  _lbScale = 1; _lbX = 0; _lbY = 0; _lbDragging = false;
 }
+// 滚轮缩放
+document.getElementById('lightbox').addEventListener('wheel', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  var delta = e.deltaY > 0 ? -0.1 : 0.1;
+  _lbScale = Math.max(0.1, _lbScale + delta * _lbScale);
+  _lbApplyTransform();
+}, { passive: false });
+// 拖拽
+document.getElementById('lbImg').addEventListener('mousedown', function(e) {
+  e.preventDefault();
+  _lbDragging = true; _lbMoved = false;
+  _lbStartX = e.clientX; _lbStartY = e.clientY;
+  _lbOrigX = _lbX; _lbOrigY = _lbY;
+  this.style.cursor = 'grabbing';
+});
+document.addEventListener('mousemove', function(e) {
+  if (!_lbDragging) return;
+  var dx = e.clientX - _lbStartX, dy = e.clientY - _lbStartY;
+  if (Math.abs(dx) > 3 || Math.abs(dy) > 3) _lbMoved = true;
+  _lbX = _lbOrigX + dx;
+  _lbY = _lbOrigY + dy;
+  _lbApplyTransform();
+});
+document.addEventListener('mouseup', function() {
+  if (!_lbDragging) return;
+  _lbDragging = false;
+  var img = document.getElementById('lbImg');
+  if (img) img.style.cursor = 'grab';
+});
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (_lbMoved) { _lbMoved = false; e.stopPropagation(); return; }
+  if (e.target !== document.getElementById('lbImg')) {
+    closeLightbox(e);
+  }
+}, true);
 </script>
 </body>
 </html>
